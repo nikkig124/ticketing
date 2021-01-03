@@ -14,7 +14,7 @@ spec:
     spec:
       containers:
         - name: auth
-          image: us.gcr.io/ticketing-dev-300517/auth
+          image: nikkig124/auth
 ---
 apiVersion: v1
 kind: Service
