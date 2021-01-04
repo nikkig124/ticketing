@@ -18,7 +18,7 @@ app.use(
     cookieSession({
         signed: false,
         secure: true,
-    })
+    }),
 );
 
 app.use(currentUserRouter);
@@ -33,9 +33,8 @@ app.use(errorHandler);
 
 const start = async () => {
     if (!process.env.JWT_KEY) {
-        throw new Error('JWT_KEY is undefined')
+        throw new Error('JWT_KEY is undefined');
     }
-
 
     try {
         await mongoose.connect('mongodb://auth-mongo-srv:27017/auth', {
