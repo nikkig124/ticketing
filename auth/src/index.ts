@@ -12,7 +12,6 @@ const start = async () => {
             useUnifiedTopology: true,
             useCreateIndex: true,
         });
-        console.log('connected');
     } catch (err) {
         console.log(err);
     }
