@@ -8,11 +8,13 @@ interface UserAttrs {
 }
 
 //interface that desctibes props that a model has
+//entire collction
 interface UserModel extends mongoose.Model<UserDoc>{
     build(attrs: UserAttrs): UserDoc;
 }
 
 //interface that desctibes the props that a user Doc has
+//single collection
 interface UserDoc extends mongoose.Document {
     email: string;
     password: string;
