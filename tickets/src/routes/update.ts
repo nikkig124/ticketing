@@ -6,10 +6,11 @@ import {
     NotAuthorizedError,
 } from '@ng-tickets/common';
 import { body } from 'express-validator';
+import { natsWrapper } from '../nats-wrapper';
 import { Ticket } from '../models/ticket';
+import { TicketUpdatedPublisher } from '../events/publishers/ticket-updated-publisher';
 
 const router = express.Router();
-
 
 router.put(
     '/api/tickets/:id',
@@ -34,12 +35,19 @@ router.put(
 
         ticket.set({
             title: req.body.title,
-            price: req.body.price
+            price: req.body.price,
         });
-
         await ticket.save();
 
-        res.send(ticket);
-    })
+        new TicketUpdatedPublisher(natsWrapper.client).publish({
+            id: ticket.id,
+            title: ticket.title,
+            price: ticket.price,
+            userId: ticket.userId,
+        });
 
-export {router as updateTicketRouter};
+        res.send(ticket);
+    },
+);
+
+export { router as updateTicketRouter };
