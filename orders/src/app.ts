@@ -4,9 +4,9 @@ import { json } from 'body-parser';
 import cookieSession from 'cookie-session';
 import { errorHandler, NotFoundError, currentUser } from '@ng-tickets/common';
 import { createOrderRouter } from './routes/new';
-import { getOrderRouter } from './routes/show';
-import { getOrdersRouter } from './routes/index';
-import { deleteOrderRouter } from './routes/update';
+import { showOrderRouter } from './routes/show';
+import { indexOrderRouter } from './routes/index';
+import { deleteOrderRouter } from './routes/delete';
 
 const app = express();
 app.set('trust proxy', true);
@@ -20,8 +20,8 @@ app.use(
 app.use(currentUser);
 
 app.use(createOrderRouter);
-app.use(getOrderRouter);
-app.use(getOrdersRouter);
+app.use(showOrderRouter);
+app.use(indexOrderRouter);
 app.use(deleteOrderRouter);
 
 

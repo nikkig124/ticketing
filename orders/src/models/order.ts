@@ -1,9 +1,21 @@
-import mongoose, { Mongoose } from 'mongoose';
+import mongoose from 'mongoose';
+import { OrderStatus } from '@ng-tickets/common';
+import { TicketDoc } from './ticket';
 
+export { OrderStatus };
 // interface that describes a user
 interface OrderAttrs {
     userId: string;
-    status: string;
+    status: OrderStatus;
+    expiresAt: Date;
+    ticket: TicketDoc;
+}
+
+//interface that desctibes the props that a Order Doc has
+//single collection
+interface OrderDoc extends mongoose.Document {
+    userId: string;
+    status: OrderStatus;
     expiresAt: Date;
     ticket: TicketDoc;
 }
@@ -12,15 +24,6 @@ interface OrderAttrs {
 //entire collction
 interface OrderModel extends mongoose.Model<OrderDoc> {
     build(attrs: OrderAttrs): OrderDoc;
-}
-
-//interface that desctibes the props that a Order Doc has
-//single collection
-interface OrderDoc extends mongoose.Document {
-    userId: string;
-    status: string;
-    expiresAt: Date;
-    ticket: TicketDoc;
 }
 
 const orderSchema = new mongoose.Schema(
@@ -32,13 +35,15 @@ const orderSchema = new mongoose.Schema(
         status: {
             type: String,
             require: true,
+            enum: Object.values(OrderStatus),
+            default: OrderStatus.Created,
         },
         expiresAt: {
             type: mongoose.Schema.Types.Date,
         },
         ticket: {
             type: mongoose.Schema.Types.ObjectId,
-            ref: 'Ticket'
+            ref: 'Ticket',
         },
     },
     {
