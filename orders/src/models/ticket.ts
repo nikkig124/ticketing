@@ -1,22 +1,18 @@
 import mongoose from 'mongoose';
 import { Order, OrderStatus } from './order';
 
-// interface that describes a user
 interface TicketAttrs {
+    id: string;
     title: string;
     price: number;
 }
 
-//interface that desctibes the props that a Ticket Doc has
-//single collection
 export interface TicketDoc extends mongoose.Document {
     title: string;
     price: number;
     isReserved(): Promise<boolean>;
 }
 
-//interface that desctibes props that a model has
-//entire collction
 interface TicketModel extends mongoose.Model<TicketDoc> {
     build(attrs: TicketAttrs): TicketDoc;
 }
@@ -25,11 +21,11 @@ const ticketSchema = new mongoose.Schema(
     {
         title: {
             type: String,
-            require: true,
+            required: true,
         },
         price: {
             type: Number,
-            require: true,
+            required: true,
             min: 0,
         },
     },
@@ -44,10 +40,14 @@ const ticketSchema = new mongoose.Schema(
 );
 
 ticketSchema.statics.build = (attrs: TicketAttrs) => {
-    return new Ticket(attrs);
+    return new Ticket({
+        _id: attrs.id,
+        title: attrs.title,
+        price: attrs.price,
+    });
 };
-
-ticketSchema.methods.isReserved = async function() {
+ticketSchema.methods.isReserved = async function () {
+    // this === the ticket document that we just called 'isReserved' on
     const existingOrder = await Order.findOne({
         ticket: this,
         status: {
@@ -59,9 +59,8 @@ ticketSchema.methods.isReserved = async function() {
         },
     });
 
-    //if null, flipped to true, then flipped to false
     return !!existingOrder;
-}
+};
 
 const Ticket = mongoose.model<TicketDoc, TicketModel>('Ticket', ticketSchema);
 
