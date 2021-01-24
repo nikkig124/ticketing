@@ -4,6 +4,7 @@ import {
     validateRequest,
     NotFoundError,
     NotAuthorizedError,
+    BadRequestError,
 } from '@ng-tickets/common';
 import { body } from 'express-validator';
 import { natsWrapper } from '../nats-wrapper';
@@ -29,6 +30,10 @@ router.put(
             throw new NotFoundError();
         }
 
+        if (ticket.orderId) {
+            throw new BadRequestError('cannot edit reserved ticket');
+        }
+
         if (ticket.userId !== req.currentUser!.id) {
             throw new NotAuthorizedError();
         }
@@ -44,7 +49,7 @@ router.put(
             title: ticket.title,
             price: ticket.price,
             userId: ticket.userId,
-            version: ticket.version
+            version: ticket.version,
         });
 
         res.send(ticket);
