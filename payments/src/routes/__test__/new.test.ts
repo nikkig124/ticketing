@@ -4,6 +4,7 @@ import { OrderStatus } from '@ng-tickets/common';
 import { app } from '../../app';
 import { Order } from '../../models/order';
 import { stripe } from '../../stripe';
+import { Payment } from '../../models/payments';
 
 it('returns a 404 when purchasing an order that does not exist', async () => {
     await request(app)
@@ -85,4 +86,11 @@ it('returns a 201 with valid inputs', async () => {
 
     expect(stripeCharge).toBeDefined();
     expect(stripeCharge!.currency).toEqual('usd');
+
+    const payment = Payment.findOne({
+        stripeId: stripeCharge!.id,
+        orderId: order.id,
+    });
+
+    expect(payment).not.toBeNull();
 });
