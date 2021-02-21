@@ -1,5 +1,5 @@
-import { Subjects, OrderCreatedEvent, Publisher } from "@ng-tickets/common";
+import { Publisher, OrderCreatedEvent, Subjects } from '@ng-tickets/common';
 
 export class OrderCreatedPublisher extends Publisher<OrderCreatedEvent> {
-    readonly subject = Subjects.OrderCreated;
+  subject: Subjects.OrderCreated = Subjects.OrderCreated;
 }
