@@ -13,10 +13,9 @@ const useRequest = ({ url, method, body, onSuccess }) => {
             if (onSuccess) {
                 onSuccess(response.data);
             }
-
             return response.data;
         } catch (err) {
-
+            console.log(err.response.data);
             setErrors(
                 <div className='alert alert-danger'>
                     <h4>Oops...</h4>
