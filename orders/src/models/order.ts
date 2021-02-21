@@ -1,10 +1,10 @@
 import mongoose from 'mongoose';
+import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 import { OrderStatus } from '@ng-tickets/common';
 import { TicketDoc } from './ticket';
-import { updateIfCurrentPlugin } from 'mongoose-update-if-current';
 
 export { OrderStatus };
-// interface that describes a user
+
 interface OrderAttrs {
     userId: string;
     status: OrderStatus;
@@ -12,8 +12,6 @@ interface OrderAttrs {
     ticket: TicketDoc;
 }
 
-//interface that desctibes the props that a Order Doc has
-//single collection
 interface OrderDoc extends mongoose.Document {
     userId: string;
     status: OrderStatus;
@@ -22,8 +20,6 @@ interface OrderDoc extends mongoose.Document {
     version: number;
 }
 
-//interface that desctibes props that a model has
-//entire collction
 interface OrderModel extends mongoose.Model<OrderDoc> {
     build(attrs: OrderAttrs): OrderDoc;
 }
@@ -32,11 +28,11 @@ const orderSchema = new mongoose.Schema(
     {
         userId: {
             type: String,
-            require: true,
+            required: true,
         },
         status: {
             type: String,
-            require: true,
+            required: true,
             enum: Object.values(OrderStatus),
             default: OrderStatus.Created,
         },
@@ -60,6 +56,7 @@ const orderSchema = new mongoose.Schema(
 
 orderSchema.set('versionKey', 'version');
 orderSchema.plugin(updateIfCurrentPlugin);
+
 orderSchema.statics.build = (attrs: OrderAttrs) => {
     return new Order(attrs);
 };

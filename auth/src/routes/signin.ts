@@ -1,18 +1,18 @@
-import { Request, Response } from 'express';
-import * as express from 'express';
+import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
 import jwt from 'jsonwebtoken';
 import { validateRequest, BadRequestError } from '@ng-tickets/common';
+
+import { Password } from '../services/password';
 import { User } from '../models/user';
-import { Password } from '../util/password';
 
 const router = express.Router();
 
 router.post(
     '/api/users/signin',
     [
-        body('email').isEmail().withMessage('email must be valid'),
-        body('password').trim().notEmpty().withMessage('you must supply pw'),
+        body('email').isEmail().withMessage('Email must be valid'),
+        body('password').trim().notEmpty().withMessage('You must supply a password'),
     ],
     validateRequest,
     async (req: Request, res: Response) => {
@@ -20,29 +20,26 @@ router.post(
 
         const existingUser = await User.findOne({ email });
         if (!existingUser) {
-          throw new BadRequestError('Invalid credentials');
+            throw new BadRequestError('Invalid credentials');
         }
 
-        const passwordsMatch = await Password.compare(
-          existingUser.password,
-          password
-        );
+        const passwordsMatch = await Password.compare(existingUser.password, password);
         if (!passwordsMatch) {
-          throw new BadRequestError('Invalid Credentials');
+            throw new BadRequestError('Invalid Credentials');
         }
 
         // Generate JWT
         const userJwt = jwt.sign(
-          {
-            id: existingUser.id,
-            email: existingUser.email
-          },
-          process.env.JWT_KEY!
+            {
+                id: existingUser.id,
+                email: existingUser.email,
+            },
+            process.env.JWT_KEY!,
         );
 
         // Store it on session object
         req.session = {
-          jwt: userJwt
+            jwt: userJwt,
         };
 
         res.status(200).send(existingUser);

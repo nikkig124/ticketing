@@ -1,8 +1,8 @@
-import { Request, Response } from 'express';
-import * as express from 'express';
-import jwt from 'jsonwebtoken';
-import { BadRequestError, validateRequest } from '@ng-tickets/common';
+import express, { Request, Response } from 'express';
 import { body } from 'express-validator';
+import jwt from 'jsonwebtoken';
+import { validateRequest, BadRequestError } from '@ng-tickets/common';
+
 import { User } from '../models/user';
 
 const router = express.Router();
@@ -10,11 +10,11 @@ const router = express.Router();
 router.post(
     '/api/users/signup',
     [
-        body('email').isEmail().withMessage('email must be valid'),
+        body('email').isEmail().withMessage('Email must be valid'),
         body('password')
             .trim()
             .isLength({ min: 4, max: 20 })
-            .withMessage('password must be betwen 4 and 20 characters'),
+            .withMessage('Password must be between 4 and 20 characters'),
     ],
     validateRequest,
     async (req: Request, res: Response) => {
@@ -29,6 +29,7 @@ router.post(
         const user = User.build({ email, password });
         await user.save();
 
+        // Generate JWT
         const userJwt = jwt.sign(
             {
                 id: user.id,
@@ -37,6 +38,7 @@ router.post(
             process.env.JWT_KEY!,
         );
 
+        // Store it on session object
         req.session = {
             jwt: userJwt,
         };
@@ -45,4 +47,4 @@ router.post(
     },
 );
 
-export { router as signUpRouter };
+export { router as signupRouter };
